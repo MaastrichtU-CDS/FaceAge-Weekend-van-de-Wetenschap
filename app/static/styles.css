@@ -1,0 +1,466 @@
+/*
+ * FaceAge science fair booth styling.
+ * Large text and buttons so the interface stays clear from a distance.
+ */
+
+:root {
+  --primary: #4a90e2;
+  --primary-dark: #2c70b8;
+  --secondary: #f5a623;
+  --accent: #7ed321;
+  --background: #f0f8ff;
+  --text: #2c3e50;
+  --error: #e74c3c;
+  --success: #27ae60;
+  --card-bg: #ffffff;
+  --border: #3498db;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(135deg, var(--background) 0%, #e8f4fc 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+h1 {
+  font-size: 2.8rem;
+  margin: 8px 0;
+  color: var(--primary);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+}
+
+.language-switch {
+  font-size: 1.3rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--secondary);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.lang-btn.active {
+  font-weight: bold;
+  color: var(--primary);
+  text-decoration: none;
+  cursor: default;
+  background: rgba(74, 144, 226, 0.1);
+  padding: 8px 16px;
+}
+
+.view {
+  margin-top: 24px;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.lead {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.video-frame {
+  margin: 16px auto;
+  max-width: 960px;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+  border-radius: 0;
+  /* Fairytale mirror frame - ornate wooden frame with gold accents */
+  border: 25px solid #5d4037;
+  box-shadow: 
+    0 0 0 10px #8d6e63,
+    0 0 0 15px #d7ccc8,
+    0 0 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Outer decorative layer - looks like carved wood */
+.video-frame::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  border: 15px solid #d7ccc8;
+  z-index: 1;
+  background: linear-gradient(135deg, #f5e9da 0%, #e8d5b5 50%, #d7ccc8 100%);
+  box-shadow: 
+    inset 0 0 40px rgba(245, 233, 218, 0.6),
+    0 0 20px rgba(215, 204, 200, 0.8);
+}
+
+/* Ornate top decoration - looks like a mirror handle or crown */
+.mirror-top {
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 40px;
+  background: linear-gradient(135deg, #d7ccc8 0%, #f5e9da 50%, #d7ccc8 100%);
+  border-radius: 20px 20px 0 0;
+  z-index: 5;
+  box-shadow: 0 0 15px rgba(215, 204, 200, 0.8);
+}
+
+.mirror-top::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 15px;
+  background: #d7ccc8;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(215, 204, 200, 0.9);
+}
+
+/* Inner dark layer - mirror glass edge */
+.video-frame::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  right: 5px;
+  bottom: 5px;
+  border: 20px solid #3e2723;
+  z-index: 2;
+}
+
+/* Decorative corners - fairytale mirror ornate details */
+.corner-tl, .corner-tr, .corner-bl, .corner-br {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #d7ccc8 0%, #bcaaa4 50%, #8d6e63 100%);
+  border-radius: 8px 0 0 0;
+  z-index: 3;
+  box-shadow: 0 0 10px rgba(215, 204, 200, 0.8);
+}
+
+.corner-tl {
+  top: -25px;
+  left: -25px;
+  clip-path: polygon(0% 100%, 100% 100%, 80% 0%, 0% 0%);
+}
+
+.corner-tr {
+  top: -25px;
+  right: -25px;
+  clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.corner-bl {
+  bottom: -25px;
+  left: -25px;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 20%, 0% 100%);
+}
+
+.corner-br {
+  bottom: -25px;
+  right: -25px;
+  clip-path: polygon(0% 0%, 80% 0%, 100% 100%, 0% 100%);
+}
+
+.video-frame:hover {
+  transform: scale(1.01);
+  box-shadow: 
+    0 0 0 10px #8d6e63,
+    0 0 0 15px #d7ccc8,
+    0 0 30px rgba(215, 204, 200, 0.8);
+}
+
+.video-frame::before:hover {
+  box-shadow: 
+    inset 0 0 40px rgba(245, 233, 218, 0.7),
+    0 0 20px rgba(215, 204, 200, 0.8);
+}
+
+video {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* mirror the webcam so it feels natural to visitors */
+  transform: scaleX(-1);
+  position: relative;
+  z-index: 4;
+  clip-path: inset(8px 8px 8px 8px);
+  /* Subtle shimmer effect like magic mirror */
+  filter: drop-shadow(0 0 8px rgba(245, 233, 218, 0.5));
+  animation: mirrorShimmer 8s ease-in-out infinite;
+}
+
+/* Hide Picture-in-Picture button in browsers that support it */
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
+@keyframes mirrorShimmer {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(245, 233, 218, 0.5)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(245, 233, 218, 0.7)) brightness(1.05);
+  }
+}
+
+.primary-btn {
+  font-size: 1.8rem;
+  font-weight: 600;
+  padding: 18px 48px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+  transition: all 0.3s ease;
+  border: 2px solid var(--primary);
+  display: block;
+  margin: 24px auto 0;
+}
+
+.primary-btn:hover:enabled {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.6);
+}
+
+.primary-btn:active:enabled {
+  transform: translateY(0);
+}
+
+.primary-btn:disabled {
+  background: #bdc3c7;
+  cursor: wait;
+  box-shadow: none;
+  opacity: 0.8;
+}
+
+.result {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  margin: 24px auto 24px;
+  max-width: 800px;
+  padding: 8px 16px;
+}
+
+.error {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--error);
+  background: rgba(231, 76, 60, 0.1);
+  padding: 16px 24px;
+  border-radius: 12px;
+  margin: 16px auto;
+  max-width: 800px;
+}
+
+.reset-note {
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.spinner {
+  width: 72px;
+  height: 72px;
+  margin: 32px auto;
+  border: 10px solid rgba(207, 216, 220, 0.3);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 2px solid rgba(74, 144, 226, 0.2);
+  font-size: 1.1rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+/* ============ Magic Animation for Loading State ============ */
+
+.magic-animation {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 32px auto;
+}
+
+/* Central pulsing magic circle */
+.magic-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border: 6px solid var(--secondary);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.6) 0%, rgba(245, 166, 35, 0.1) 70%, transparent 100%);
+  box-shadow: 
+    0 0 20px rgba(245, 166, 35, 0.4),
+    inset 0 0 15px rgba(245, 166, 35, 0.2);
+  animation: magicPulse 1.5s ease-in-out infinite, rotate 10s linear infinite;
+}
+
+/* Sparkles - twinkling stars */
+.sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+  animation: sparkle 2.5s ease-in-out infinite, float 5s ease-in-out infinite;
+  opacity: 0;
+}
+
+.sparkle-1 { top: 10%; left: 20%; animation-delay: 0s; }
+.sparkle-2 { top: 30%; left: 80%; animation-delay: 0.3s; }
+.sparkle-3 { top: 70%; left: 15%; animation-delay: 0.6s; }
+.sparkle-4 { top: 85%; left: 70%; animation-delay: 0.9s; }
+.sparkle-5 { top: 50%; left: 5%; animation-delay: 1.2s; }
+.sparkle-6 { top: 20%; left: 60%; animation-delay: 1.5s; }
+
+/* Floating magic orbs */
+.magic-orbs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245, 166, 35, 0.4) 0%, rgba(74, 144, 226, 0.4) 100%);
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.4);
+  animation: float 7s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 20px;
+  height: 20px;
+  top: 25%;
+  left: 40%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 15px;
+  height: 15px;
+  top: 60%;
+  left: 75%;
+  animation-delay: 1s;
+}
+
+.orb-3 {
+  width: 25px;
+  height: 25px;
+  top: 10%;
+  left: 80%;
+  animation-delay: 2s;
+}
+
+/* Animations */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-10px) rotate(90deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes magicPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 
+      0 0 20px rgba(245, 166, 35, 0.4),
+      inset 0 0 15px rgba(245, 166, 35, 0.2);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow: 
+      0 0 30px rgba(245, 166, 35, 0.6),
+      inset 0 0 20px rgba(245, 166, 35, 0.3);
+  }
+}
+
+@keyframes rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}

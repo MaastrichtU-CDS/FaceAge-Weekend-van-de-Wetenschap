@@ -1,0 +1,18 @@
+# Simple yearly start command for the FaceAge science fair booth:
+#
+#   docker compose up
+#
+# Open http://localhost:8000 on the booth laptop.
+services:
+  faceage:
+    build:
+      context: .
+      dockerfile: Dockerfile.serve
+    image: faceage:serve
+    container_name: faceage-beurs
+    ports:
+      - "8000:8000"
+    volumes:
+      # the model is mounted read-only; photos are never stored
+      - ./models:/models:ro
+    restart: unless-stopped
