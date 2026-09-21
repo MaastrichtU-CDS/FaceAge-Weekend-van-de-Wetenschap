@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FaceAge</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="container">
+
+    <header class="topbar">
+      <h1>FaceAge</h1>
+      <div class="language-switch" role="group" aria-label="Taal / Language">
+        <button type="button" id="lang-nl" class="lang-btn active">Nederlands</button>
+        <span aria-hidden="true">|</span>
+        <button type="button" id="lang-en" class="lang-btn">English</button>
+      </div>
+    </header>
+
+    <section id="view-camera" class="view">
+      <p class="lead" data-i18n="welcome"></p>
+      <p data-i18n="instructions"></p>
+      <div class="video-frame">
+        <video id="webcam" autoplay playsinline muted></video>
+      </div>
+      <button type="button" id="capture-btn" class="primary-btn" data-i18n="capture" disabled></button>
+    </section>
+
+    <section id="view-loading" class="view" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="lead" data-i18n="loading" role="status"></p>
+    </section>
+
+    <section id="view-result" class="view" hidden>
+      <p class="result" id="result-text" role="status"></p>
+      <p data-i18n="result_explanation"></p>
+      <p class="reset-note" data-i18n="reset_note"></p>
+      <button type="button" id="retry-btn" class="primary-btn" data-i18n="retry"></button>
+    </section>
+
+    <section id="view-error" class="view" hidden>
+      <p class="error" id="error-text" role="alert"></p>
+      <p class="reset-note" data-i18n="reset_note"></p>
+      <button type="button" id="error-retry-btn" class="primary-btn" data-i18n="retry"></button>
+    </section>
+
+    <footer class="footer">
+      <p data-i18n="privacy"></p>
+      <p data-i18n="research_notice"></p>
+    </footer>
+
+  </main>
+
+  <!-- the photo only lives in this in-memory canvas, it is never saved -->
+  <canvas id="snapshot" hidden></canvas>
+
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>

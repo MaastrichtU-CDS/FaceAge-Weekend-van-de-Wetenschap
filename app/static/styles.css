@@ -1,0 +1,154 @@
+/*
+ * FaceAge science fair booth styling.
+ * Large text and buttons so the interface stays clear from a distance.
+ */
+
+:root {
+  --primary: #0067b9;
+  --primary-dark: #004e8c;
+  --background: #f5f7fa;
+  --text: #1c1c1c;
+  --error: #b00020;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+h1 {
+  font-size: 2.8rem;
+  margin: 8px 0;
+  color: var(--primary-dark);
+}
+
+.language-switch {
+  font-size: 1.3rem;
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.lang-btn.active {
+  font-weight: bold;
+  color: var(--text);
+  text-decoration: none;
+  cursor: default;
+}
+
+.view {
+  margin-top: 24px;
+  font-size: 1.5rem;
+  line-height: 1.5;
+}
+
+.lead {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.video-frame {
+  margin: 16px auto;
+  max-width: 720px;
+  border: 6px solid var(--primary);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+video {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* mirror the webcam so it feels natural to visitors */
+  transform: scaleX(-1);
+}
+
+.primary-btn {
+  font-size: 1.8rem;
+  font-weight: 600;
+  padding: 18px 48px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary-btn:hover:enabled {
+  background: var(--primary-dark);
+}
+
+.primary-btn:disabled {
+  background: #9e9e9e;
+  cursor: wait;
+}
+
+.result {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.error {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--error);
+}
+
+.reset-note {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.spinner {
+  width: 72px;
+  height: 72px;
+  margin: 32px auto;
+  border: 10px solid #cfd8dc;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+  font-size: 1.1rem;
+  color: #555;
+}

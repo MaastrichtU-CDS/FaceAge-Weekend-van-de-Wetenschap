@@ -1,0 +1,25 @@
+# CPU Docker image for the local FaceAge science fair web service.
+#
+# Build:  docker build -f Dockerfile.serve -t faceage:serve .
+# Run:    see beurs-run.sh or docker-compose.yml
+FROM python:3.9-slim-bookworm
+
+# libGL is required by OpenCV (MTCNN dependency)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /srv/faceage
+
+COPY app/requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --no-deps mtcnn==0.1.1
+
+COPY app/ .
+
+# the model is mounted read-only at runtime (e.g. -v "$PWD/models:/models:ro")
+ENV FACEAGE_MODEL_PATH=/models/faceage_model.h5
+
+EXPOSE 8000
+
+CMD ["python", "server.py"]
