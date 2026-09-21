@@ -230,6 +230,15 @@ video {
   animation: mirrorShimmer 8s ease-in-out infinite;
 }
 
+/* Hide Picture-in-Picture button in browsers that support it */
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+
 @keyframes mirrorShimmer {
   0%, 100% {
     filter: drop-shadow(0 0 8px rgba(245, 233, 218, 0.5)) brightness(1);
