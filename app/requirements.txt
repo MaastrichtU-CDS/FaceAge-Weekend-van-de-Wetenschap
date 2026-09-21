@@ -16,4 +16,4 @@ keras==2.6.0
 numpy==1.19.5
 h5py==3.1.0
 opencv-python-headless==4.5.4.60
-Pillow==9.2.0
+Pillow==10.3.0
