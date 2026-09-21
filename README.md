@@ -47,6 +47,28 @@ Then open <http://localhost:8000> on the booth laptop and allow camera access fo
 | Port 8000 already in use | Map a different host port, e.g. `docker run --rm -p 8080:8000 -v "$PWD/models:/models:ro" faceage:serve`, and open <http://localhost:8080>. |
 | Slow predictions | The image runs CPU-only; a few seconds per prediction is normal. |
 
+## Notes
+
+**CPU or GPU?** CPU-only. The image installs the standard (CPU) build of TensorFlow 2.6 and is meant to run on an ordinary booth laptop with no GPU or special drivers. A few seconds per prediction is normal.
+
+**Pack the model into the image?** By default the model is kept out of the image and mounted read-only at runtime — this keeps the image (and the GHCR package) small. If you prefer a single self-contained image, bake the ~92 MB model in with a tiny variant Dockerfile:
+
+```dockerfile
+# Dockerfile.serve-with-model  (model baked in; ~92 MB larger image)
+FROM faceage:serve
+COPY models/faceage_model.h5 /models/faceage_model.h5
+```
+
+Build and run it **without** the volume mount (fetch the model first, see "Yearly setup"):
+
+```bash
+docker build -f Dockerfile.serve -t faceage:serve .
+docker build -f Dockerfile.serve-with-model -t faceage:serve-with-model .
+docker run --rm -p 8000:8000 faceage:serve-with-model
+```
+
+> Note: `Dockerfile.serve-with-model` is optional and not required for the fair; the default setup (model mounted from `models/`) already works fully offline once the file is downloaded.
+
 ## Privacy
 
 - Photos are processed **in memory only** — there is no uploads folder, no temp files, no database, and no photo data in the logs.
