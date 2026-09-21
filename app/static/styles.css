@@ -271,25 +271,13 @@ video {
 }
 
 .result {
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 700;
   color: var(--primary);
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(245, 166, 35, 0.1) 100%);
-  padding: 16px 24px;
-  border-radius: 16px;
-  margin: 16px auto;
+  text-align: center;
+  margin: 24px auto 16px;
   max-width: 800px;
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+  padding: 8px 16px;
 }
 
 .error {
@@ -355,22 +343,22 @@ video {
   height: 80px;
   border: 6px solid var(--secondary);
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 166, 35, 0.8) 0%, rgba(245, 166, 35, 0.2) 70%, transparent 100%);
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.6) 0%, rgba(245, 166, 35, 0.1) 70%, transparent 100%);
   box-shadow: 
-    0 0 30px rgba(245, 166, 35, 0.5),
-    inset 0 0 20px rgba(245, 166, 35, 0.3);
-  animation: pulse 1.5s ease-in-out infinite, rotate 8s linear infinite;
+    0 0 20px rgba(245, 166, 35, 0.4),
+    inset 0 0 15px rgba(245, 166, 35, 0.2);
+  animation: magicPulse 1.5s ease-in-out infinite, rotate 10s linear infinite;
 }
 
 /* Sparkles - twinkling stars */
 .sparkle {
   position: absolute;
-  width: 12px;
-  height: 12px;
-  background: #ffeb3b;
+  width: 10px;
+  height: 10px;
+  background: #ffd700;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 235, 59, 0.8);
-  animation: sparkle 2s ease-in-out infinite, float 4s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+  animation: sparkle 2.5s ease-in-out infinite, float 5s ease-in-out infinite;
   opacity: 0;
 }
 
@@ -394,9 +382,9 @@ video {
 .orb {
   position: absolute;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(245, 166, 35, 0.6) 0%, rgba(74, 144, 226, 0.6) 100%);
-  box-shadow: 0 0 15px rgba(245, 166, 35, 0.6);
-  animation: float 6s ease-in-out infinite;
+  background: linear-gradient(135deg, rgba(245, 166, 35, 0.4) 0%, rgba(74, 144, 226, 0.4) 100%);
+  box-shadow: 0 0 8px rgba(245, 166, 35, 0.4);
+  animation: float 7s ease-in-out infinite;
 }
 
 .orb-1 {
@@ -438,26 +426,26 @@ video {
 @keyframes float {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
-    opacity: 0.8;
+    opacity: 0.7;
   }
   50% {
-    transform: translateY(-20px) rotate(180deg);
-    opacity: 1;
+    transform: translateY(-10px) rotate(90deg);
+    opacity: 0.9;
   }
 }
 
-@keyframes pulse {
+@keyframes magicPulse {
   0%, 100% {
     transform: translate(-50%, -50%) scale(1);
     box-shadow: 
-      0 0 30px rgba(245, 166, 35, 0.5),
-      inset 0 0 20px rgba(245, 166, 35, 0.3);
+      0 0 20px rgba(245, 166, 35, 0.4),
+      inset 0 0 15px rgba(245, 166, 35, 0.2);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.08);
     box-shadow: 
-      0 0 50px rgba(245, 166, 35, 0.8),
-      inset 0 0 30px rgba(245, 166, 35, 0.5);
+      0 0 30px rgba(245, 166, 35, 0.6),
+      inset 0 0 20px rgba(245, 166, 35, 0.3);
   }
 }
 
