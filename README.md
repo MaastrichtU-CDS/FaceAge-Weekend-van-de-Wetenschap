@@ -1,6 +1,6 @@
 # FaceAge — Weekend van de Wetenschap (science fair booth)
 
-This repo packages the [FaceAge](https://github.com/AIM-Harvard/FaceAge) deep-learning model by AIM-Harvard — published in *The Lancet Digital Health* (2025), "FaceAge, a deep learning system to estimate biological age from face photographs to improve prognostication" — as a standalone, self-contained booth for the Weekend van de Wetenschap science fair. A bilingual (NL/EN) web page with a child-friendly colorful interface takes a webcam photo and shows a rounded FaceAge estimate. Photos are processed in memory only and are never saved; the result view automatically resets after 30 seconds. **The container runs with no network access (`--network none`) for maximum privacy and security — no data can be uploaded anywhere.**
+This repo packages the [FaceAge](https://github.com/AIM-Harvard/FaceAge) deep-learning model by AIM-Harvard — published in *The Lancet Digital Health* (2025), "FaceAge, a deep learning system to estimate biological age from face photographs to improve prognostication" — as a standalone, self-contained booth for the Weekend van de Wetenschap science fair. A bilingual (NL/EN) web page with a child-friendly colorful interface takes a webcam photo and shows a rounded FaceAge estimate. Photos are processed in memory only and are never saved; the result view automatically resets after 30 seconds; and once the Docker image and model file are on the booth laptop, no internet connection is needed at the fair.
 
 ## Yearly setup (needs internet)
 
@@ -72,10 +72,15 @@ docker run --rm -p 8000:8000 faceage:serve-with-model
 ## Privacy & Security
 
 - Photos are processed **in memory only** — there is no uploads folder, no temp files, no database, and no photo data in the logs.
-- **Network isolation**: The container runs with `--network none` (in `docker-compose.yml` and `beurs-run.sh`), meaning it has **zero network access** — no outgoing internet connections are possible, and no data can be uploaded anywhere.
+- **No external network calls**: The application code contains no HTTP libraries (requests, urllib, httpx, etc.) and makes no outgoing network requests. All communication is with the browser on `localhost` via the `/predict` endpoint.
+- **No browser storage**: The frontend does not use localStorage, sessionStorage, or cookies to persist any data.
+- **No tracking**: No analytics, beacons, or tracking scripts are included.
+- **No file I/O**: Beyond reading the model file at startup, no files are written or read — the `.save()` call in inference.py writes to an in-memory BytesIO buffer, not to disk.
 - All traffic stays on `localhost`; nothing leaves the booth laptop.
 - The result view automatically resets after 30 seconds, ready for the next visitor.
 - The interface uses a cheerful, child-friendly color scheme designed for younger audiences.
+
+**Note for deployment**: While the application itself has no network calls, for maximum security at the fair booth, you can run the container with `--network none` (add to `docker-compose.yml` and `beurs-run.sh`) to block all network access at the Docker level.
 
 ## Disclaimer
 

@@ -6,7 +6,6 @@ set -euo pipefail
 
 docker run --rm \
   --name faceage-beurs \
-  --network none \
   -p 8000:8000 \
   -v "$PWD/models:/models:ro" \
   faceage:serve

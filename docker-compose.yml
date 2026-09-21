@@ -10,7 +10,6 @@ services:
       dockerfile: Dockerfile.serve
     image: faceage:serve
     container_name: faceage-beurs
-    network_mode: none
     ports:
       - "8000:8000"
     volumes:
