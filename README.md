@@ -31,7 +31,9 @@ The `models/` folder is mounted into the container read-only at runtime; the mod
 
 ```bash
 ./beurs-run.sh
-# or:
+````
+Or
+```bash
 docker compose up
 ```
 
