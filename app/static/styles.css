@@ -203,17 +203,17 @@ h1 {
 }
 
 .video-frame:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
   box-shadow: 
     0 0 0 10px #8d6e63,
     0 0 0 15px #d7ccc8,
-    0 0 35px rgba(215, 204, 200, 0.9);
+    0 0 30px rgba(215, 204, 200, 0.8);
 }
 
 .video-frame::before:hover {
   box-shadow: 
-    inset 0 0 50px rgba(245, 233, 218, 0.8),
-    0 0 25px rgba(215, 204, 200, 0.9);
+    inset 0 0 40px rgba(245, 233, 218, 0.7),
+    0 0 20px rgba(215, 204, 200, 0.8);
 }
 
 video {
@@ -251,6 +251,8 @@ video {
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
   transition: all 0.3s ease;
   border: 2px solid var(--primary);
+  display: block;
+  margin: 24px auto 0;
 }
 
 .primary-btn:hover:enabled {
@@ -275,7 +277,7 @@ video {
   font-weight: 700;
   color: var(--primary);
   text-align: center;
-  margin: 24px auto 16px;
+  margin: 24px auto 24px;
   max-width: 800px;
   padding: 8px 16px;
 }
