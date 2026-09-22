@@ -4,7 +4,29 @@ This repository packages the [FaceAge](https://github.com/AIM-Harvard/FaceAge) d
 
 ## Yearly Setup (requires internet)
 
-Perform these steps once per year on a machine with internet access (for example, when preparing the booth laptop).
+Perform this once per year on the booth laptop, with internet access. The setup script checks everything and downloads what is missing:
+
+```bash
+./beurs-setup.sh            # macOS / Linux
+```
+
+```powershell
+.\beurs-setup.ps1           # Windows (PowerShell; if blocked: powershell -ExecutionPolicy Bypass -File .\beurs-setup.ps1)
+```
+
+The script:
+
+1. checks that Docker is installed and running (and starts Docker Desktop if it is not);
+2. on an Apple Silicon Mac, installs Rosetta if missing;
+3. pulls the prebuilt image from GHCR (or builds it locally with `--build` / `-Build`);
+4. on an Apple Silicon Mac, verifies that Docker runs amd64 images through Rosetta rather than QEMU (TensorFlow needs this) and tells you exactly which Docker Desktop setting to change if not;
+5. downloads the ~92 MB model into `models/` if it is missing or damaged;
+6. starts the booth once on a test port and sends it a blank photo to confirm the whole pipeline works.
+
+It is safe to rerun at any time: steps that are already done are skipped. It ends with `Setup complete`, or with `SETUP FAILED: ...` and the reason.
+
+<details>
+<summary>Manual setup (what the script does, step by step)</summary>
 
 **1. Get the Docker image** — either build it locally:
 
@@ -27,20 +49,31 @@ mkdir -p models && curl -L -o models/faceage_model.h5 https://github.com/AIM-Har
 
 The `models/` folder is mounted into the container as read-only at runtime; the model file itself is git-ignored.
 
-### macOS notes
+</details>
 
-Tested on macOS 26 with Docker Desktop 4.84 on an Apple Silicon (M-series) Mac. The `--platform linux/amd64` pins below are no-ops on Windows and Linux x86_64 hosts, so the same files work everywhere.
+### Platform notes
 
-- **Docker Desktop must be running** before `./beurs-run.sh` or `docker compose up` (start it from Applications; the whale icon in the menu bar shows when it is ready).
-- **Apple Silicon:** the image is `linux/amd64` only, because TensorFlow 2.6 has no ARM Linux build. `beurs-run.sh`, `docker-compose.yml` and the commands above pin `--platform linux/amd64`, and Docker Desktop runs it through Rosetta (enabled by default in *Settings → General → "Use Rosetta for x86_64/amd64 emulation"*). Rosetta is required: the QEMU fallback lacks the AVX instructions TensorFlow needs. Model loading takes ~10 s and a prediction ~2 s under emulation.
+The image is `linux/amd64` only, because TensorFlow 2.6 has no ARM Linux build. All scripts and commands pin `--platform linux/amd64`; on Windows and Linux x86_64 this is a no-op.
+
+**Windows** — tested with Docker Desktop (WSL 2 backend). Use the PowerShell scripts (`beurs-setup.ps1`, `beurs-run.ps1`) or `docker compose up`. The bash scripts also work from Git Bash.
+
+**macOS** — tested on macOS 26 with Docker Desktop 4.84 on an Apple Silicon (M-series) Mac.
+
+- Docker Desktop must be running before `./beurs-run.sh` or `docker compose up`. The setup script starts it for you; otherwise open it from Applications and wait for the whale icon in the menu bar to settle.
+- On Apple Silicon, Docker Desktop runs the image through **Rosetta**. This is the default (*Settings → General → "Use Rosetta for x86_64/amd64 emulation on Apple Silicon"*) but it requires Rosetta to be installed; without it Docker silently falls back to QEMU, which lacks the AVX instructions TensorFlow needs. The setup script detects this. Model loading takes ~10 s and a prediction ~2 s under Rosetta.
+- To restart the Docker daemon on a Mac, restart Docker Desktop: `docker desktop restart` in a terminal, or whale menu → *Restart*. Then wait until `docker info` succeeds. The setup script does this automatically when the engine does not respond.
 
 ## Running at the Fair (offline)
 
 ```bash
-./beurs-run.sh
+./beurs-run.sh              # macOS / Linux
 ```
 
-…or:
+```powershell
+.\beurs-run.ps1             # Windows
+```
+
+…or on any platform:
 
 ```bash
 docker compose up
@@ -57,6 +90,10 @@ Then open <http://localhost:8000> on the booth laptop and allow camera access fo
 | Page not loading | Check `docker ps` to confirm the `faceage-beurs` container is running, and that port 8000 is free. |
 | Port 8000 already in use | Map a different host port, e.g. `docker run --rm -p 8080:8000 -v "$PWD/models:/models:ro" faceage:serve`, and open <http://localhost:8080>. |
 | Slow predictions | The image runs on CPU only; a few seconds per prediction is normal. |
+| `Cannot connect to the Docker daemon` | Docker Desktop is not running. Open it and wait for the whale icon to settle; on a Mac `open -a Docker`. |
+| Docker commands hang with no output (`docker info`, `docker compose up` stuck before `Attaching to`) | Docker Desktop shows as running but its engine is unreachable (happens after sleep or a quick quit/reopen). Run `docker desktop restart` (or whale menu → Restart) and wait ~30 s. `./beurs-setup.sh` / `.\beurs-setup.ps1` detect this and restart it for you. |
+| `docker compose up` stalls at `Attaching to faceage-beurs` with no log lines (Apple Silicon Mac) | Docker is emulating with QEMU instead of Rosetta, so TensorFlow never finishes importing. Run `./beurs-setup.sh`, which detects this, or check manually: `docker exec faceage-beurs grep -c avx2 /proc/cpuinfo` prints `0`. Fix: install Rosetta (`softwareupdate --install-rosetta --agree-to-license`), enable *Settings → General → Use Rosetta for x86_64/amd64 emulation* in Docker Desktop, Apply & restart, then `docker compose down` and start again. |
+| Setup script says `SETUP FAILED` | The line after it names the failing step and the fix. Rerun the script after fixing; completed steps are skipped. |
 
 ## Notes
 
