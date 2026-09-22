@@ -5,6 +5,7 @@
 set -euo pipefail
 
 docker run --rm \
+  --platform linux/amd64 \
   --name faceage-beurs \
   -p 8000:8000 \
   -v "$PWD/models:/models:ro" \

@@ -9,23 +9,30 @@ Perform these steps once per year on a machine with internet access (for example
 **1. Get the Docker image** — either build it locally:
 
 ```bash
-docker build -f Dockerfile.serve -t faceage:serve .
+docker build --platform linux/amd64 -f Dockerfile.serve -t faceage:serve .
 ```
 
 …or pull the prebuilt package from GHCR (built via **Actions → "Build Docker image" → "Run workflow"**):
 
 ```bash
-docker pull ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve
+docker pull --platform linux/amd64 ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve
 docker tag ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve faceage:serve
 ```
 
-**2. Fetch the model file** (once, ~1 GB, from the original authors' release):
+**2. Fetch the model file** (once, ~92 MB, from the original authors' release):
 
 ```bash
 mkdir -p models && curl -L -o models/faceage_model.h5 https://github.com/AIM-Harvard/FaceAge/releases/download/v1/faceage_model.h5
 ```
 
 The `models/` folder is mounted into the container as read-only at runtime; the model file itself is git-ignored.
+
+### macOS notes
+
+Tested on macOS 26 with Docker Desktop 4.84 on an Apple Silicon (M-series) Mac. The `--platform linux/amd64` pins below are no-ops on Windows and Linux x86_64 hosts, so the same files work everywhere.
+
+- **Docker Desktop must be running** before `./beurs-run.sh` or `docker compose up` (start it from Applications; the whale icon in the menu bar shows when it is ready).
+- **Apple Silicon:** the image is `linux/amd64` only, because TensorFlow 2.6 has no ARM Linux build. `beurs-run.sh`, `docker-compose.yml` and the commands above pin `--platform linux/amd64`, and Docker Desktop runs it through Rosetta (enabled by default in *Settings → General → "Use Rosetta for x86_64/amd64 emulation"*). Rosetta is required: the QEMU fallback lacks the AVX instructions TensorFlow needs. Model loading takes ~10 s and a prediction ~2 s under emulation.
 
 ## Running at the Fair (offline)
 
