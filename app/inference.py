@@ -11,14 +11,11 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-import base64
 import io
 import logging
-import marshal
 
 import numpy as np
 import tensorflow as tf
-import keras.utils.generic_utils as generic_utils
 from mtcnn import MTCNN
 from PIL import Image
 
@@ -37,36 +34,17 @@ def _scale_sum(inputs, scale=0.1):
     return inputs[0] + inputs[1] * scale
 
 
-# the model was saved with Python 3.6 and its Lambda layers store marshalled
-# bytecode, which cannot be unmarshalled by newer Python versions. As every
-# Lambda layer in the model is the identical scale-sum above, the bytecode of
-# an equivalent function compiled for the running Python version is
-# substituted during model loading.
-_SCALE_SUM_CODE = base64.b64encode(
-    marshal.dumps(_scale_sum.__code__)).decode("ascii")
+class _FaceAgeLambda(tf.keras.layers.Lambda):
+    """Load FaceAge's scale-sum layers without executing Python 3.6 bytecode."""
 
-_orig_func_load = generic_utils.func_load
-
-
-def _safe_func_load(code, defaults=None, closure=None, globs=None):
-
-    """
-    Wrapper around keras' func_load that substitutes the Python 3.6
-    marshalled Lambda bytecode with an equivalent function compiled for the
-    running Python version, keeping the per-layer scale argument.
-    """
-
-    try:
-        return _orig_func_load(code, defaults=defaults,
-                               closure=closure, globs=globs)
-    except (ValueError, TypeError):
-        if defaults is not None:
-            return _orig_func_load(_SCALE_SUM_CODE, defaults=defaults,
-                                   closure=closure, globs=globs)
-        return _scale_sum
-
-
-generic_utils.func_load = _safe_func_load
+    @classmethod
+    def from_config(cls, config, custom_objects=None):
+        if (not config["name"].endswith("_ScaleSum")
+                or set(config["arguments"]) != {"scale"}):
+            raise ValueError("Unsupported Lambda layer in FaceAge model")
+        return cls(_scale_sum, arguments=config["arguments"],
+                   output_shape=config["output_shape"], name=config["name"],
+                   trainable=config["trainable"], dtype=config["dtype"])
 
 logger = logging.getLogger("faceage")
 
@@ -109,7 +87,9 @@ class FaceAgePredictor:
         with self._model_graph.as_default():
             self._model_session = tf.compat.v1.Session()
             with self._model_session.as_default():
-                self._model = tf.keras.models.load_model(model_path)
+                self._model = tf.keras.models.load_model(
+                    model_path, custom_objects={"Lambda": _FaceAgeLambda},
+                    compile=False)
 
         # warm up the model graph once so the first real request is fast
         # (a blank image simply yields "no_face", which is fine)

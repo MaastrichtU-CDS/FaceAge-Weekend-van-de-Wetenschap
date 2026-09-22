@@ -1,19 +1,17 @@
 # Dependencies for the FaceAge science fair web service.
 #
-# Python 3.9 + TensorFlow 2.6 matches the model/training stack of this
-# repository (Python 3.6 / TF 2.6) while still building on a modern
-# Debian base image. The last 2.6.x patch releases are pinned.
+# Python 3.11 + TensorFlow 2.15 supports ARM64 and x86_64 while retaining
+# Keras 2 compatibility with the original FaceAge model.
 flask==2.2.5
 werkzeug==2.2.3
-# protobuf must stay at 3.20.x for the generated TensorFlow 2.6 code
-protobuf==3.20.3
-tensorflow==2.6.4
-keras==2.6.0
+tensorflow==2.15.1
+keras==2.15.0
+# MTCNN 0.1.1 imports pkg_resources, removed in newer setuptools releases.
+setuptools==80.9.0
 # note: mtcnn is installed separately with --no-deps (see Dockerfile.serve)
 # because it depends on the GUI opencv-python package, which conflicts with
 # opencv-python-headless; its other deps (tensorflow, keras) are pinned here
-# numpy is capped at 1.19.x because TensorFlow 2.6 requires numpy ~=1.19.2
-numpy==1.19.5
-h5py==3.1.0
-opencv-python-headless==4.5.4.60
+numpy==1.26.4
+h5py==3.10.0
+opencv-python-headless==4.10.0.84
 Pillow==10.3.0

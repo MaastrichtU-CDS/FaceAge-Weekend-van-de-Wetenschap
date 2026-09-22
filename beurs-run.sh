@@ -3,9 +3,9 @@
 # Expects the model at ./models/faceage_model.h5 and the image
 # faceage:serve to be built (see README.md).
 set -euo pipefail
+cd "$(dirname "$0")"
 
 docker run --rm \
-  --platform linux/amd64 \
   --name faceage-beurs \
   -p 8000:8000 \
   -v "$PWD/models:/models:ro" \

@@ -17,7 +17,6 @@ Set-Location $PSScriptRoot
 
 $Image       = "faceage:serve"
 $ImageRemote = "ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve"
-$Platform    = "linux/amd64"
 $Model       = "models\faceage_model.h5"
 $ModelUrl    = "https://github.com/AIM-Harvard/FaceAge/releases/download/v1/faceage_model.h5"
 $ModelMin    = 80000000
@@ -66,12 +65,12 @@ Ok "Docker $(docker version --format '{{.Server.Version}}') is running"
 # ------------------------------------------------------------- 2 image
 Write-Host "== 2/4 Docker image"
 if ($Build) {
-  Info "building $Image for $Platform (takes a while)"
-  docker build --platform $Platform -f Dockerfile.serve -t $Image .
+  Info "building $Image for the Docker host (takes a while)"
+  docker build -f Dockerfile.serve -t $Image .
   if ($LASTEXITCODE -ne 0) { Fail "image build failed; check the internet connection and the output above" }
 } else {
   Info "pulling $ImageRemote"
-  docker pull --platform $Platform $ImageRemote | Out-Null
+  docker pull $ImageRemote | Out-Null
   if ($LASTEXITCODE -ne 0) { Fail "image pull failed. Check the internet connection, or build locally with: .\beurs-setup.ps1 -Build" }
   docker tag $ImageRemote $Image
 }
@@ -102,7 +101,7 @@ if (ModelOk) {
 Write-Host "== 4/4 Smoke test"
 Cleanup
 $modelsDir = (Resolve-Path models).Path
-docker run -d --name $TestName --platform $Platform -p "127.0.0.1:${TestPort}:8000" -v "${modelsDir}:/models:ro" $Image | Out-Null
+docker run -d --name $TestName -p "127.0.0.1:${TestPort}:8000" -v "${modelsDir}:/models:ro" $Image | Out-Null
 if ($LASTEXITCODE -ne 0) { Fail "could not start the test container" }
 Info "starting the booth once (model load takes ~10-30 s)"
 $up = $false
