@@ -55,7 +55,7 @@ The `models/` folder is mounted into the container as read-only at runtime; the 
 
 The image is `linux/amd64` only, because TensorFlow 2.6 has no ARM Linux build. All scripts and commands pin `--platform linux/amd64`; on Windows and Linux x86_64 this is a no-op.
 
-**Windows** — tested with Docker Desktop (WSL 2 backend). Use the PowerShell scripts (`beurs-setup.ps1`, `beurs-run.ps1`) or `docker compose up`. The bash scripts also work from Git Bash.
+**Windows** — Docker Desktop (WSL 2 backend). Use the PowerShell scripts (`beurs-setup.ps1`, `beurs-run.ps1`; written for Windows PowerShell 5.1 and newer, not yet exercised on a Windows machine) or `docker compose up`, which is unchanged from previous years. The bash scripts also work from Git Bash.
 
 **macOS** — tested on macOS 26 with Docker Desktop 4.84 on an Apple Silicon (M-series) Mac.
 
