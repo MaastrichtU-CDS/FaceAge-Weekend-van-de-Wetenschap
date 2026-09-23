@@ -55,7 +55,7 @@ The `models/` folder is mounted into the container as read-only at runtime; the 
 
 The image uses Python 3.11 and TensorFlow 2.15.1 with Keras 2.15. Docker builds support `linux/amd64` and `linux/arm64`; the scripts use the Docker host's architecture. Apple Silicon runs ARM64 directly, without Rosetta. Keras 2 is retained for compatibility with the original model; its Python 3.6 Lambda layers are loaded using an equivalent scale-sum function.
 
-**Windows** — Docker Desktop (WSL 2 backend). Use the PowerShell scripts (`beurs-setup.ps1`, `beurs-run.ps1`; written for Windows PowerShell 5.1 and newer, not yet exercised on a Windows machine) or `docker compose up`, which is unchanged from previous years. The bash scripts also work from Git Bash.
+**Windows** — Docker Desktop (WSL 2 backend). Use the PowerShell scripts (`beurs-setup.ps1`, `beurs-run.ps1`, `beurs-cleanup.ps1`; written for Windows PowerShell 5.1 and newer, not yet exercised on a Windows machine) or `docker compose up`, which is unchanged from previous years. The bash scripts also work from Git Bash.
 
 **macOS** — use Docker Desktop or OrbStack on Apple Silicon (M-series) or Intel Macs.
 
@@ -104,6 +104,20 @@ docker compose up
 ```
 
 Then open <http://localhost:8000> on the booth laptop and allow camera access for `localhost` when the browser prompts you.
+
+## Cleanup
+
+Removes the booth containers and the Docker images, including the untagged leftovers of previous builds, so nothing is left dangling. The model file in `models/` is kept, so a rerun of the setup only needs to fetch the image again:
+
+```bash
+./beurs-cleanup.sh            # macOS / Linux
+```
+
+```powershell
+.\beurs-cleanup.ps1           # Windows (if blocked: powershell -ExecutionPolicy Bypass -File .\beurs-cleanup.ps1)
+```
+
+It is safe to rerun at any time, even while the booth is running (the booth stops; start it again with `./beurs-run.sh`).
 
 ## Troubleshooting
 
