@@ -5,14 +5,12 @@
 #   ./beurs-setup.sh            pull the prebuilt image from GHCR (default)
 #   ./beurs-setup.sh --build    build the image locally instead
 #
-# Steps: 1 Docker running  2 host platform (Rosetta on Apple Silicon)
-#        3 image           4 emulation check  5 model file  6 smoke test
+# Steps: 1 Docker running  2 image  3 model file  4 smoke test
 set -euo pipefail
 cd "$(dirname "$0")"
 
 IMAGE=faceage:serve
 IMAGE_REMOTE=ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve
-PLATFORM=linux/amd64
 MODEL=models/faceage_model.h5
 MODEL_URL=https://github.com/AIM-Harvard/FaceAge/releases/download/v1/faceage_model.h5
 MODEL_MIN_BYTES=80000000
@@ -25,9 +23,7 @@ fail() { printf '\nSETUP FAILED: %s\n' "$*" >&2; exit 1; }
 cleanup() { docker rm -f "$TEST_NAME" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-OS=$(uname -s); ARCH=$(uname -m)
-APPLE_SILICON=false
-[[ $OS == Darwin && $ARCH == arm64 ]] && APPLE_SILICON=true
+OS=$(uname -s)
 
 # ---------------------------------------------------------------- 1 Docker
 # `docker info` can hang (not fail) when Docker Desktop is up but its engine VM
@@ -42,7 +38,7 @@ wait_docker() {  # $1 = max seconds
   while (( $(date +%s) < end )); do docker_up && return 0; sleep 2; done
   return 1
 }
-echo "== 1/6 Docker"
+echo "== 1/4 Docker"
 command -v docker >/dev/null 2>&1 \
   || fail "docker command not found. Install Docker Desktop: https://www.docker.com/products/docker-desktop/"
 if ! docker_up; then
@@ -64,54 +60,22 @@ if ! docker_up; then
 fi
 ok "Docker $(docker version --format '{{.Server.Version}}') is running"
 
-# ------------------------------------------------------- 2 host platform
-echo "== 2/6 Host platform"
-if $APPLE_SILICON; then
-  if arch -x86_64 /usr/bin/true >/dev/null 2>&1; then
-    ok "Apple Silicon Mac, Rosetta is installed"
-  else
-    info "Apple Silicon Mac without Rosetta; installing it (may ask for your password)"
-    softwareupdate --install-rosetta --agree-to-license \
-      || fail "Rosetta install failed. Run: softwareupdate --install-rosetta --agree-to-license"
-    ok "Rosetta installed"
-  fi
-else
-  ok "$OS $ARCH"
-fi
-
-# ---------------------------------------------------------------- 3 image
-echo "== 3/6 Docker image"
+# ---------------------------------------------------------------- 2 image
+echo "== 2/4 Docker image"
 if [[ ${1:-} == --build ]]; then
-  info "building $IMAGE for $PLATFORM (takes a while)"
-  docker build --platform "$PLATFORM" -f Dockerfile.serve -t "$IMAGE" . \
+  info "building $IMAGE for the Docker host (takes a while)"
+  docker build -f Dockerfile.serve -t "$IMAGE" . \
     || fail "image build failed; check the internet connection and the output above"
 else
   info "pulling $IMAGE_REMOTE"
-  docker pull --platform "$PLATFORM" "$IMAGE_REMOTE" >/dev/null \
+  docker pull "$IMAGE_REMOTE" >/dev/null \
     || fail "image pull failed. Check the internet connection, or build locally with: ./beurs-setup.sh --build"
   docker tag "$IMAGE_REMOTE" "$IMAGE"
 fi
 ok "image $IMAGE ($(docker image inspect "$IMAGE" --format '{{.Os}}/{{.Architecture}}'))"
 
-# ------------------------------------------------------ 4 emulation check
-echo "== 4/6 Emulation check"
-if $APPLE_SILICON; then
-  # TensorFlow needs AVX; Docker Desktop's Rosetta mode exposes it, QEMU does not
-  if docker run --rm --platform "$PLATFORM" "$IMAGE" grep -q -w avx2 /proc/cpuinfo; then
-    ok "Docker runs amd64 images through Rosetta"
-  else
-    fail "Docker Desktop is emulating amd64 with QEMU, which cannot run TensorFlow (the booth would hang with no log output).
-  Fix: Docker Desktop -> Settings -> General -> enable
-       'Use Rosetta for x86_64/amd64 emulation on Apple Silicon' -> Apply & restart, then rerun this script.
-  If the option is missing, update Docker Desktop (4.16 or newer) and set
-  'Virtual Machine Options' to Apple Virtualization framework or Docker VMM."
-  fi
-else
-  ok "native amd64 host, no emulation needed"
-fi
-
-# ---------------------------------------------------------------- 5 model
-echo "== 5/6 Model file"
+# ---------------------------------------------------------------- 3 model
+echo "== 3/4 Model file"
 model_ok() {
   [[ -f $MODEL ]] || return 1
   [[ $(wc -c <"$MODEL") -ge $MODEL_MIN_BYTES ]] || return 1
@@ -129,10 +93,10 @@ else
   ok "$MODEL downloaded"
 fi
 
-# ----------------------------------------------------------- 6 smoke test
-echo "== 6/6 Smoke test"
+# ----------------------------------------------------------- 4 smoke test
+echo "== 4/4 Smoke test"
 cleanup
-docker run -d --name "$TEST_NAME" --platform "$PLATFORM" \
+docker run -d --name "$TEST_NAME" \
   -p "127.0.0.1:$TEST_PORT:8000" -v "$PWD/models:/models:ro" "$IMAGE" >/dev/null
 info "starting the booth once (model load takes ~10-30 s)"
 for _ in $(seq 1 90); do

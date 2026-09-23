@@ -2,7 +2,7 @@
 #
 # Build:  docker build -f Dockerfile.serve -t faceage:serve .
 # Run:    see beurs-run.sh or docker-compose.yml
-FROM python:3.9-slim-bookworm
+FROM python:3.11-slim-bookworm
 
 # libGL is required by OpenCV (MTCNN dependency)
 RUN apt-get update \

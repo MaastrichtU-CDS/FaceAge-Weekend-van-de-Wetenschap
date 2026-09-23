@@ -9,9 +9,6 @@ services:
       context: .
       dockerfile: Dockerfile.serve
     image: faceage:serve
-    # TensorFlow 2.6 only ships x86_64 Linux wheels; on Apple Silicon Macs this
-    # runs under Rosetta emulation (Docker Desktop default)
-    platform: linux/amd64
     container_name: faceage-beurs
     ports:
       - "8000:8000"
