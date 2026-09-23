@@ -3,6 +3,7 @@ __pycache__/
 .env
 .venv/
 venv/
+.idea/
 .DS_Store
 Thumbs.db
 models/*
