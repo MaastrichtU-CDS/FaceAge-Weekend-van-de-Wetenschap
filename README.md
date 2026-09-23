@@ -39,6 +39,7 @@ docker build -f Dockerfile.serve -t faceage:serve .
 ```bash
 docker pull ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve
 docker tag ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve faceage:serve
+docker rmi ghcr.io/maastrichtu-cds/faceage-weekend-van-de-wetenschap:serve   # drop the remote tag so a single image remains
 ```
 
 **2. Fetch the model file** (once, ~92 MB, from the original authors' release):
