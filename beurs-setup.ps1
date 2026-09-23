@@ -73,6 +73,8 @@ if ($Build) {
   docker pull $ImageRemote | Out-Null
   if ($LASTEXITCODE -ne 0) { Fail "image pull failed. Check the internet connection, or build locally with: .\beurs-setup.ps1 -Build" }
   docker tag $ImageRemote $Image
+  # drop the remote tag so a single image remains; the layers stay via $Image
+  docker rmi $ImageRemote *> $null
 }
 Ok "image $Image ($(docker image inspect $Image --format '{{.Os}}/{{.Architecture}}'))"
 

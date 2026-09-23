@@ -71,6 +71,8 @@ else
   docker pull "$IMAGE_REMOTE" >/dev/null \
     || fail "image pull failed. Check the internet connection, or build locally with: ./beurs-setup.sh --build"
   docker tag "$IMAGE_REMOTE" "$IMAGE"
+  # drop the remote tag so a single image remains; the layers stay via $IMAGE
+  docker rmi "$IMAGE_REMOTE" >/dev/null
 fi
 ok "image $IMAGE ($(docker image inspect "$IMAGE" --format '{{.Os}}/{{.Architecture}}'))"
 
