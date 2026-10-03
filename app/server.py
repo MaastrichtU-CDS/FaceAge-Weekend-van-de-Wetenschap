@@ -1,10 +1,12 @@
 # -----------------
 # Flask web server for the FaceAge science fair booth.
 #
-# Serves a small bilingual (NL/EN) webcam page and a POST /predict
-# endpoint that estimates FaceAge from a single photo. Photos are
-# processed fully in memory and are never written to disk, a database
-# or the logs.
+# Serves a small bilingual (NL/EN) webcam page, a POST /predict
+# endpoint that estimates FaceAge from a single photo and a POST /detect
+# endpoint that only reports where faces are, so the page can take the
+# photo automatically once a visitor stands still. Photos and detection
+# frames are processed fully in memory and are never written to disk, a
+# database or the logs.
 # -----------------
 
 import os
@@ -67,6 +69,37 @@ def predict():
         logger.info("prediction returned: %s", result["code"])
 
     return jsonify(result)
+
+
+@app.route("/detect", methods=["POST"])
+def detect():
+
+    """
+    Locate faces in a small webcam frame without estimating an age. The
+    page polls this a few times per second while the camera view is
+    shown; frames are discarded as soon as the detector has seen them.
+    """
+
+    upload = request.files.get("image")
+
+    if upload is None:
+        return jsonify({"status": "error", "code": "invalid_image"}), 400
+
+    image_bytes = upload.read()
+
+    try:
+        with prediction_lock:
+            faces = predictor.detect_faces(image_bytes)
+    except ValueError:
+        return jsonify({"status": "error", "code": "invalid_image"}), 400
+    except Exception:
+        logger.exception("face detection failed")
+        return jsonify({"status": "error", "code": "prediction_failed"}), 500
+
+    # not logged at INFO level: this endpoint is called continuously
+    logger.debug("detected %d face(s)", len(faces))
+
+    return jsonify({"status": "success", "faces": faces})
 
 
 @app.errorhandler(RequestEntityTooLarge)

@@ -1,6 +1,6 @@
 # FaceAge — Weekend van de Wetenschap (Science Fair Booth)
 
-This repository packages the [FaceAge](https://github.com/AIM-Harvard/FaceAge) deep learning model by AIM-Harvard — published in *The Lancet Digital Health* (2025), "FaceAge, a deep learning system to estimate biological age from face photographs to improve prognostication" — as a standalone, self-contained booth for the *Weekend van de Wetenschap* (Dutch Science Weekend) science fair. A bilingual (NL/EN) web page with a child-friendly colourful interface takes a webcam photo and displays a rounded FaceAge estimate. Photos are processed in memory only and are never saved; the result view automatically resets after 30 seconds; and once the Docker image and model file are on the booth laptop, no internet connection is needed at the fair.
+This repository packages the [FaceAge](https://github.com/AIM-Harvard/FaceAge) deep learning model by AIM-Harvard — published in *The Lancet Digital Health* (2025), "FaceAge, a deep learning system to estimate biological age from face photographs to improve prognostication" — as a standalone, self-contained booth for the *Weekend van de Wetenschap* (Dutch Science Weekend) science fair. A bilingual (NL/EN) web page with a child-friendly colourful interface takes a webcam photo and displays a rounded FaceAge estimate. The photo is taken automatically once a single face has held still in front of the camera for a few seconds (a progress bar shows the countdown); it can also be taken with the button or the Enter key. Photos are processed in memory only and are never saved; the result view automatically resets after 30 seconds; and once the Docker image and model file are on the booth laptop, no internet connection is needed at the fair.
 
 ## Yearly Setup (requires internet)
 
@@ -106,6 +106,13 @@ docker compose up
 
 Then open <http://localhost:8000> on the booth laptop and allow camera access for `localhost` when the browser prompts you.
 
+### Using the booth
+
+- **Automatic photo**: while the camera view is shown, the page sends a small (320 px wide) frame to the `/detect` endpoint a few times per second. As soon as exactly one face is found, the status line turns green and a bar fills up; when the face has held still for about 2.5 seconds the photo is taken. Moving, leaving the frame or a second face appearing restarts the countdown.
+- **Manual photo**: the button under the camera, or the **Enter** key, takes the photo right away. On the result and error screens Enter does the same as "Try again", so a booth attendant never has to reach for the mouse.
+- **Fallback**: if five detection requests in a row fail or take longer than two seconds (for example because the detector is too slow on the booth laptop), the page switches itself to button-only operation: the status line disappears and the instructions tell visitors to press the button or Enter. Reloading the page tries automatic capture again.
+- The timings and thresholds (hold time, polling interval, frame size, allowed movement, failure limit) are constants at the top of `app/static/app.js`; set `AUTO_CAPTURE` to `false` there to go back to button-only operation.
+
 ## Cleanup
 
 Removes the booth containers and the Docker images, including the untagged leftovers of previous builds, so nothing is left dangling. The model file in `models/` is kept, so a rerun of the setup only needs to fetch the image again:
@@ -158,8 +165,8 @@ docker run --rm -p 8000:8000 faceage:serve-with-model
 
 ## Privacy & Security
 
-- Photos are processed **in memory only** — there is no uploads folder, no temporary files, no database, and no photo data in the logs.
-- **No external network calls**: The application code contains no HTTP libraries (requests, urllib, httpx, etc.) and makes no outgoing network requests. All communication is with the browser on `localhost` via the `/predict` endpoint.
+- Photos are processed **in memory only** — there is no uploads folder, no temporary files, no database, and no photo data in the logs. The same holds for the small frames used for face detection: they are decoded, passed through the detector and discarded; only the face positions are returned to the browser.
+- **No external network calls**: The application code contains no HTTP libraries (requests, urllib, httpx, etc.) and makes no outgoing network requests. All communication is with the browser on `localhost` via the `/predict` and `/detect` endpoints.
 - **No browser storage**: The frontend does not use localStorage, sessionStorage, or cookies to persist any data.
 - **No tracking**: No analytics, beacons, or tracking scripts are included.
 - **No file I/O**: Beyond reading the model file at start-up, no files are written or read — the `.save()` call in inference.py writes to an in-memory BytesIO buffer, not to disk.

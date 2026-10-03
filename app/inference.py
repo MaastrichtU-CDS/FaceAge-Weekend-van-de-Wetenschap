@@ -119,13 +119,7 @@ class FaceAgePredictor:
         """
 
         image = self._decode_image(image_bytes)
-
-        # run detection and prediction with their own graph and session,
-        # because Flask request threads do not share the main thread's
-        # default graph
-        with self._detector_graph.as_default():
-            with self._detector_session.as_default():
-                faces = self._detector.detect_faces(image)
+        faces = self._detect(image)
 
         if len(faces) == 0:
             return {"status": "error", "code": "no_face"}
@@ -135,11 +129,52 @@ class FaceAgePredictor:
 
         face_input = self._extract_face_input(image, faces[0])
 
+        # the model also has its own graph and session (see _detect)
         with self._model_graph.as_default():
             with self._model_session.as_default():
                 prediction = np.squeeze(self._model.predict(face_input))
 
         return {"status": "success", "faceage": int(round(float(prediction)))}
+
+    def detect_faces(self, image_bytes):
+
+        """
+        Only locate faces in the given in-memory image bytes, without
+        estimating an age. Used by the booth page to notice when a visitor
+        is standing still in front of the camera.
+
+        Returns a list with one dictionary per detected face, with the
+        bounding box as fractions (0-1) of the image width and height:
+        {"x": ..., "y": ..., "w": ..., "h": ..., "confidence": ...}.
+
+        Raises ValueError if the bytes cannot be decoded as an image.
+        """
+
+        image = self._decode_image(image_bytes)
+        height, width = image.shape[:2]
+
+        boxes = []
+        for face in self._detect(image):
+            x1, y1, box_width, box_height = face["box"]
+            boxes.append({
+                "x": max(0, x1) / width,
+                "y": max(0, y1) / height,
+                "w": box_width / width,
+                "h": box_height / height,
+                "confidence": round(float(face["confidence"]), 3)
+            })
+
+        return boxes
+
+    def _detect(self, image):
+
+        """Run MTCNN on a decoded RGB image array."""
+
+        # run detection with its own graph and session, because Flask
+        # request threads do not share the main thread's default graph
+        with self._detector_graph.as_default():
+            with self._detector_session.as_default():
+                return self._detector.detect_faces(image)
 
     @staticmethod
     def _decode_image(image_bytes):

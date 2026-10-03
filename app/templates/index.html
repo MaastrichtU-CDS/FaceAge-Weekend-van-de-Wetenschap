@@ -20,7 +20,7 @@
 
     <section id="view-camera" class="view">
       <p class="lead" data-i18n="welcome"></p>
-      <p data-i18n="instructions"></p>
+      <p id="instructions" data-i18n="instructions"></p>
       <div class="video-frame">
         <div class="mirror-top" aria-hidden="true"></div>
         <div class="corner-tl" aria-hidden="true"></div>
@@ -28,6 +28,10 @@
         <div class="corner-bl" aria-hidden="true"></div>
         <div class="corner-br" aria-hidden="true"></div>
         <video id="webcam" autoplay playsinline muted disablePictureInPicture></video>
+      </div>
+      <p id="face-status" class="face-status" role="status" aria-live="polite"></p>
+      <div id="hold-bar" class="hold-bar" aria-hidden="true" hidden>
+        <div id="hold-progress" class="hold-progress"></div>
       </div>
       <button type="button" id="capture-btn" class="primary-btn" data-i18n="capture" disabled></button>
     </section>
@@ -72,6 +76,8 @@
 
   <!-- the photo only lives in this in-memory canvas, it is never saved -->
   <canvas id="snapshot" hidden></canvas>
+  <!-- small frames for face detection are drawn here and wiped right away -->
+  <canvas id="detect-frame" hidden></canvas>
 
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 </body>

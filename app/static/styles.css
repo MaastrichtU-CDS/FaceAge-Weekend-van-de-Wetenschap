@@ -248,6 +248,38 @@ video::-webkit-media-controls-start-playback-button {
   }
 }
 
+/* status line under the camera: searching / face found, hold still */
+.face-status {
+  min-height: 2.4rem;
+  margin: 12px auto 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--secondary);
+  transition: color 0.3s ease;
+}
+
+.face-status.found {
+  color: var(--success);
+}
+
+/* fills up while the visitor holds still, until the photo is taken */
+.hold-bar {
+  width: min(480px, 80%);
+  height: 14px;
+  margin: 8px auto 0;
+  border-radius: 7px;
+  background: rgba(74, 144, 226, 0.15);
+  overflow: hidden;
+}
+
+.hold-progress {
+  width: 0;
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+  transition: width 0.3s linear;
+}
+
 .primary-btn {
   font-size: 1.8rem;
   font-weight: 600;

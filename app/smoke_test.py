@@ -21,6 +21,10 @@ def check():
         assert response.json == {"status": "error", "code": "no_face"}, response.json
         response = client.post("/predict", data={"image": (io.BytesIO(b"invalid"), "bad.jpg")})
         assert response.status_code == 400, response.json
+        response = client.post("/detect", data={"image": (io.BytesIO(blank), "blank.jpg")})
+        assert response.json == {"status": "success", "faces": []}, response.json
+        response = client.post("/detect", data={"image": (io.BytesIO(b"invalid"), "bad.jpg")})
+        assert response.status_code == 400, response.json
 
         # A blank photo skips FaceAge, so also exercise the actual model weights.
         sample = np.random.default_rng(0).normal(size=(1, 160, 160, 3)).astype("float32")
@@ -38,6 +42,11 @@ def check():
             assert response.status_code == 200 and response.json["status"] == "success", response.json
             assert isinstance(response.json["faceage"], int), response.json
             print("Face prediction:", response.json)
+            response = client.post("/detect", data={"image": (io.BytesIO(photo), "face.jpg")})
+            assert response.status_code == 200 and len(response.json["faces"]) == 1, response.json
+            box = response.json["faces"][0]
+            assert all(0 <= box[k] <= 1 for k in ("x", "y", "w", "h")), box
+            print("Face detection:", response.json)
         print(f"Passed: TensorFlow {tf.__version__}, {platform.machine()}, model output {estimate.item():.6f}")
 
 
