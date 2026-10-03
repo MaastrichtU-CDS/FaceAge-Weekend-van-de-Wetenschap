@@ -109,8 +109,8 @@ Then open <http://localhost:8000> on the booth laptop and allow camera access fo
 ### Using the booth
 
 - **Automatic photo**: while the camera view is shown, the page sends a small (320 px wide) frame to the `/detect` endpoint a few times per second. As soon as exactly one face is found, the status line turns green and a bar fills up; when the face has held still for about 2.5 seconds the photo is taken. Moving, leaving the frame or a second face appearing restarts the countdown.
-- **Manual photo**: the button under the camera, or the **Enter** key, takes the photo right away. On the result and error screens Enter does the same as "Try again", so a booth attendant never has to reach for the mouse.
-- **Fallback**: if five detection requests in a row fail or take longer than two seconds (for example because the detector is too slow on the booth laptop), the page switches itself to button-only operation: the status line disappears and the instructions tell visitors to press the button or Enter. Reloading the page tries automatic capture again.
+- **Manual photo**: the button under the camera, or the **Enter** key or **space bar**, takes the photo right away. On the result and error screens Enter and Space do the same as "Try again", so a booth attendant never has to reach for the mouse.
+- **Fallback**: if five detection requests in a row fail or take longer than two seconds (for example because the detector is too slow on the booth laptop), the page switches itself to button-only operation: the status line disappears and the instructions tell visitors to press the button, Enter or Space. Reloading the page tries automatic capture again.
 - The timings and thresholds (hold time, polling interval, frame size, allowed movement, failure limit) are constants at the top of `app/static/app.js`; set `AUTO_CAPTURE` to `false` there to go back to button-only operation.
 
 ## Cleanup

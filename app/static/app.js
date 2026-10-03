@@ -17,7 +17,7 @@ const TEXTS = {
   nl: {
     welcome: "Welkom! Ga voor de camera staan.",
     instructions: "Kijk recht in de camera en blijf even stilstaan. De foto wordt dan vanzelf gemaakt.",
-    instructions_manual: "Kijk recht in de camera en druk op de knop (of op Enter) om een foto te maken.",
+    instructions_manual: "Kijk recht in de camera en druk op de knop (of op Enter of de spatiebalk) om een foto te maken.",
     capture: "Neem nu een foto",
     face_searching: "We zoeken je gezicht…",
     face_found: "Gezicht gevonden! Blijf stilstaan…",
@@ -36,7 +36,7 @@ const TEXTS = {
   en: {
     welcome: "Welcome! Stand in front of the camera.",
     instructions: "Look straight at the camera and hold still for a moment. The photo is then taken automatically.",
-    instructions_manual: "Look straight at the camera and press the button (or Enter) to take a photo.",
+    instructions_manual: "Look straight at the camera and press the button (or Enter or the space bar) to take a photo.",
     capture: "Take a photo now",
     face_searching: "We are looking for your face…",
     face_found: "Face found! Hold still…",
@@ -57,7 +57,7 @@ const TEXTS = {
 // automatic return to the start screen after a result or error
 const RESET_DELAY_MS = 30000;
 
-// automatic capture: set to false to only use the button / Enter key
+// automatic capture: set to false to only use the button / Enter / Space
 const AUTO_CAPTURE = true;
 // how long a single face must stay still before the photo is taken
 const HOLD_STILL_MS = 2500;
@@ -408,15 +408,15 @@ async function sendPhoto(blob) {
   }
 }
 
-/* ---------- keyboard: Enter presses the button of the current view ---------- */
+/* ---------- keyboard: Enter or Space presses the button of the current view ---------- */
 
 function handleKeydown(event) {
-  if (event.key !== "Enter" || event.repeat) {
+  if ((event.key !== "Enter" && event.key !== " ") || event.repeat) {
     return;
   }
   // a focused action button (take a photo / try again) already handles
-  // Enter itself as a click; any other focused element (e.g. a language
-  // button that was just clicked) must not swallow the key
+  // Enter and Space itself as a click; any other focused element (e.g. a
+  // language button that was just clicked) must not swallow the key
   if (event.target instanceof HTMLButtonElement
       && event.target.classList.contains("primary-btn")) {
     return;
